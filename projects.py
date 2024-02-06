@@ -57,7 +57,7 @@ if __name__ == "__main__":
     stats = pd.DataFrame.from_dict(
         {
             f"[{project.removeprefix('jaraco.')}]({homepage_url})": (
-                f"{get_pypi_stats_last_month(project):,}",
+                get_pypi_stats_last_month(project),
             )
             for role, project in jaraco_projects
             if (
@@ -71,5 +71,6 @@ if __name__ == "__main__":
             key_column := f"downloads last month <sub>(as of {TODAY})</sub>",
         ],
     ).sort_values(key_column, ascending=False)
+    stats[key_column].map(lambda downloads: f"{downloads:,}" if downloads else "N/A")
 
     print(stats.to_markdown())
