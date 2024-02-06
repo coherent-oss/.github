@@ -12,7 +12,7 @@ from pypistats import recent
 
 # ruff: noqa: EXE003, T201
 
-TODAY = datetime.now(timezone.utc).strftime("%B %dth, %Y")
+TODAY = datetime.now(timezone.utc).strftime("%B %-dth, %Y")
 SKELETON_PATTERN = re.compile(
     r"https://img.shields.io/badge/skeleton-\d{4}-informational",
 )
@@ -70,7 +70,8 @@ if __name__ == "__main__":
         columns=[
             key_column := f"downloads last month <sub>(as of {TODAY})</sub>",
         ],
-    ).sort_values(key_column, ascending=False)
-    stats[key_column].map(lambda downloads: f"{downloads:,}" if downloads else "N/A")
+    ).sort_values(key_column, ascending=False).map(
+        lambda downloads: f"{downloads:,}" if isinstance(downloads, int) else downloads,
+    )
 
     print(stats.to_markdown())
