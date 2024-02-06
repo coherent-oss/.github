@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import re
 import xmlrpc.client
+from datetime import datetime, timezone
 from functools import cache
 
 import pandas as pd
@@ -11,6 +12,7 @@ from pypistats import recent
 
 # ruff: noqa: EXE003, T201
 
+TODAY = datetime.now(timezone.utc).strftime("%B %dth, %Y")
 SKELETON_PATTERN = re.compile(
     r"https://img.shields.io/badge/skeleton-\d{4}-informational",
 )
@@ -54,7 +56,9 @@ if __name__ == "__main__":
     jaraco_projects = get_jaraco_projects()
     stats = pd.DataFrame.from_dict(
         {
-            f"[{project}]({homepage_url})": (get_pypi_stats_last_month(project),)
+            f"[{project.removeprefix('jaraco.')}]({homepage_url})": (
+                f"{get_pypi_stats_last_month(project):,}",
+            )
             for role, project in jaraco_projects
             if (
                 homepage_url := get_homepage(
@@ -64,7 +68,7 @@ if __name__ == "__main__":
         },
         orient="index",
         columns=[
-            key_column := "downloads last month <sub>(as of February 6th, 2024)</sub>",
+            key_column := f"downloads last month <sub>(as of {TODAY})</sub>",
         ],
     ).sort_values(key_column, ascending=False)
 
