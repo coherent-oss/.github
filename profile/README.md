@@ -1,6 +1,6 @@
 ## Coherent OSS
 
-_Coherent OSS_ is a community that maintains more then one hundred useful open-source tools:
+_Coherent OSS_ is a community that maintains more than one hundred useful open-source tools:
 
 |                                                                                                              | downloads last month <sub>(as of February 6th, 2024)</sub>   |
 |:-------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|
