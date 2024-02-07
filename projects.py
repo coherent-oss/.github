@@ -34,6 +34,7 @@ def get_jaraco_projects() -> dict[str, Project]:
     client = xmlrpc.client.ServerProxy("https://pypi.python.org/pypi")
     projects_by_homepage: dict[str, Project] = {}
     cumulative_downloads: dict[str, int] = defaultdict(int)
+
     for role, name in cast("list[tuple[str, str]]", client.user_packages("jaraco")):
         url = f"https://pypi.org/project/{name}"
         downloads = get_pypi_stats_last_month(name)
@@ -46,6 +47,7 @@ def get_jaraco_projects() -> dict[str, Project]:
             name=basename(homepage.removesuffix("/")),
             url=url,
         )
+
     return projects_by_homepage
 
 
