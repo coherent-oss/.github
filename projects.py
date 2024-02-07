@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import re
 import xmlrpc.client
+from collections import defaultdict
 from datetime import datetime, timezone
 from functools import cache
+from posixpath import basename
+from typing import NamedTuple, cast
 
 import pandas as pd
-from httpx import HTTPStatusError, get
+from httpcore import UnsupportedProtocol
+from httpx import HTTPError, HTTPStatusError, get
 from pypistats import recent
 
 # ruff: noqa: EXE003, T201
@@ -18,9 +22,31 @@ SKELETON_PATTERN = re.compile(
 )
 
 
-def get_jaraco_projects() -> list[tuple[str, str]]:
+class Project(NamedTuple):
+    name: str
+    role: str
+    cumulative_downloads: int
+    downloads: int
+    url: str
+
+
+def get_jaraco_projects() -> dict[str, Project]:
     client = xmlrpc.client.ServerProxy("https://pypi.python.org/pypi")
-    return client.user_packages("jaraco")  # type: ignore[return-value]
+    projects_by_homepage: dict[str, Project] = {}
+    cumulative_downloads: dict[str, int] = defaultdict(int)
+    for role, name in cast("list[tuple[str, str]]", client.user_packages("jaraco")):
+        url = f"https://pypi.org/project/{name}"
+        downloads = get_pypi_stats_last_month(name)
+        homepage = get_homepage(url)
+        cumulative_downloads[homepage] += downloads
+        projects_by_homepage[homepage] = Project(
+            downloads=downloads,
+            cumulative_downloads=cumulative_downloads[homepage],
+            role=role,
+            name=basename(homepage.removesuffix("/")),
+            url=url,
+        )
+    return projects_by_homepage
 
 
 def get_pypi_stats_last_month(project: str) -> int:
@@ -37,8 +63,16 @@ def get_pypi_project_data(project_url: str) -> dict[str, str]:
     ).json()["info"]
 
 
-def get_homepage(project: str) -> str:
-    return get_pypi_project_data(project)["home_page"]
+def get_homepage(project_url: str) -> str:
+    try:
+        return str(
+            get(
+                get_pypi_project_data(project_url)["home_page"],
+                follow_redirects=True,
+            ).url,
+        )
+    except (HTTPError, UnsupportedProtocol):
+        return project_url
 
 
 def get_skeleton_status(project_url: str, no_skeleton: str = "❌") -> str:
@@ -56,22 +90,20 @@ if __name__ == "__main__":
     jaraco_projects = get_jaraco_projects()
     stats = pd.DataFrame.from_dict(
         {
-            f"[{project.removeprefix('jaraco.')}]({homepage_url})": (
-                get_pypi_stats_last_month(project),
-            )
-            for role, project in jaraco_projects
-            if (
-                homepage_url := get_homepage(
-                    project_url := f"https://pypi.org/project/{project}",
-                )
-            ).startswith("https://github.com/jaraco")
+            f"[{project.name}]({homepage_url})": project.cumulative_downloads
+            for homepage_url, project in jaraco_projects.items()
+            if homepage_url.startswith("https://github.com/jaraco")
         },
         orient="index",
         columns=[
-            key_column := f"downloads last month <sub>(as of {TODAY})</sub>",
+            downloads_column_name := f"downloads last month <sub>(as of {TODAY})</sub>",
         ],
-    ).sort_values(key_column, ascending=False).map(
-        lambda downloads: f"{downloads:,}" if isinstance(downloads, int) else downloads,
-    )
-
+    ).sort_values(downloads_column_name, ascending=False)
+    downloads_column = stats[downloads_column_name]
+    total_downloads = downloads_column.sum()
+    stats[downloads_column_name] = downloads_column.map("{:,}".format)
     print(stats.to_markdown())
+    print(
+        "\nLast month, projects from the above table "
+        f"had a total of {total_downloads:,} downloads.",
+    )
