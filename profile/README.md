@@ -1,6 +1,6 @@
 ## Coherent OSS
 
-_Coherent OSS_ is a community that maintains more than one hundred open-source Python libraries and tools:
+_Coherent OSS_ is a collaborative community that maintains 100+ open-source Python libraries and tools:
 
 |                                                                                                              | downloads last month <sub>(as of February 7th, 2024)</sub>   |
 |:-------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------|
