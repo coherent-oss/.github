@@ -2,6 +2,7 @@
 
 _Coherent OSS_ is a collaborative community that maintains 100+ open-source Python libraries and tools:
 
+<!-- table start -->
 |                                                                                                              | downloads last month <sub>(as of February 7th, 2024)</sub>   |
 |:-------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------|
 | [zipp](https://github.com/jaraco/zipp)                                                                       | 164,139,475                                                  |
@@ -105,6 +106,7 @@ _Coherent OSS_ is a collaborative community that maintains 100+ open-source Pyth
 | [treehouse](https://github.com/jaraco/treehouse)                                                             | 20                                                           |
 | [setuptools_hacks.bypass_summary_newline](https://github.com/jaraco/setuptools_hacks.bypass_summary_newline) | 16                                                           |
 | [jaraco.parables](https://github.com/jaraco/jaraco.parables)                                                 | 16                                                           |
+<!-- table end -->
 
 Founded in 2024 by Jason R. Coombs ([@jaraco](https://github.com/jaraco)) and Bartosz Sławecki ([@bswck](https://github.com/bswck)).
 
