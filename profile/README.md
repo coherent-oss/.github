@@ -108,7 +108,7 @@ _Coherent OSS_ is a collaborative community that maintains 100+ open-source Pyth
 | [jaraco.parables](https://github.com/jaraco/jaraco.parables)                                                 | 16                                                           |
 <!-- table end -->
 
-Founded in 2024 by Jason R. Coombs ([@jaraco](https://github.com/jaraco)) and Bartosz Sławecki ([@bswck](https://github.com/bswck)).
+Founded in 2024 by Jason R. Coombs ([@jaraco](https://github.com/jaraco)) and Bartosz Sławecki ([@johnslavik](https://github.com/johnslavik)).
 
 ### Contribution guidelines
 🚧 _Under construction._
